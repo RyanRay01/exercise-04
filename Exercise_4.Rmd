@@ -1,0 +1,123 @@
+---
+title: "Exercise 4"
+output: html_document
+date: "2024-02-12"
+---
+
+## Load in Dictionaries
+```{r}
+library(tidyverse)
+
+CED <- "https://raw.githubusercontent.com/difiore/ada-2024-datasets/main/collins-scrabble-words-2019.txt"
+
+GW <- "https://raw.githubusercontent.com/difiore/ada-2024-datasets/main/google-10000-english-usa-no-swears.txt"
+
+load_dictionary <- function(f) {
+  library(tidyverse)
+  f <- read.table(f, header = TRUE)[["words"]]
+  
+  return(f)
+}
+
+valid_list <- load_dictionary(CED)
+solution_list <- load_dictionary(GW)
+```
+
+## Update Solution List
+```{r}
+solution_list <- intersect(solution_list,valid_list)
+# After intersection goes from 9884 words to 8336
+
+```
+
+## Create Pick Solution Function
+```{r}
+pick_solution <- function(x) {
+  vlet <- subset(x, nchar(x) == 5)
+  solution <- sample(vlet,1)
+  y <-str_split(solution, "")[[1]]
+  return(y)
+}
+
+```
+
+## Pick Solution Word
+```{r}
+solution <- pick_solution(solution_list)
+
+```
+
+## Evaluate Guess Function
+```{r}
+evaluate_guess <- function(x, y){
+  guess <- toupper(x)
+  guess <- str_split(guess, "")[[1]]
+  solution <- y
+  #vlist <- subset(z, nchar(x) == 5)
+  out <- rep("-", length(y))
+  
+ for (i in 1:length(y)) {
+    if (guess[i] == solution[i]) {
+       out[i] <- "*"
+      solution[i] <- "-" 
+    }
+ }
+  
+  for (i in 1:length(y)) {
+    if (out[i] != "*") {
+      idx <- match(guess[i], solution)
+      if (!is.na(idx)) {
+        out[i] <- "+"
+        solution[idx] <- "-"}
+    }
+  }
+  return(out)
+}
+```
+
+## Wordle Function
+```{r}
+play_wordle <- function(solution, valid_list, num_guesses=6){
+      l_left <- LETTERS
+      guesses <- num_guesses
+print(paste0("You have ", num_guesses," guesses left to guess a 5 letter word"))
+
+while (guesses > 0) {
+print("Letters Left:")
+  print(paste0(l_left))
+  
+  guesses <- (guesses - 1)
+  
+  print("Make a Guess")
+  guess <- readline(prompt = " ")
+  
+  while (nchar(guess) != length(solution)) {
+      guess <- readline(paste0("Guess must have ", length(solution), " characters: "))
+  }
+  
+  evaluation <- evaluate_guess(guess,solution)
+  guess <- toupper(guess)
+  guess <- str_split(guess, "")[[1]]
+   l_left <- setdiff(l_left,guess)
+   
+   
+  print(paste0(guess))
+  print(paste0(evaluation))
+  print(paste0("Guesses Left ",guesses))
+    if (all(evaluation == "*")) {
+      print("GAME WON")
+      return("~~~")
+    }
+  }
+  print(paste0("GAME OVER"))
+  print(paste0("Answer:"))
+  print(paste0(solution, collapse = " "))
+  return("~~~")
+}
+
+```
+
+## Play Wordle
+```{r}
+play_wordle(solution, solution_list,)
+```
