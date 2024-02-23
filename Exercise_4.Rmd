@@ -6,7 +6,7 @@ date: "2024-02-12"
 
 ### Load in Dictionaries
 
-```{r,include=FALSE}
+```{r}
 library(tidyverse)
 
 CED <- "https://raw.githubusercontent.com/difiore/ada-2024-datasets/main/collins-scrabble-words-2019.txt"
@@ -26,7 +26,7 @@ solution_list <- load_dictionary(GW)
 
 ### Update Solution List
 
-```{r,include=FALSE}
+```{r}
 solution_list <- intersect(solution_list,valid_list)
 # After intersection goes from 9884 words to 8336
 
@@ -34,7 +34,7 @@ solution_list <- intersect(solution_list,valid_list)
 
 ### Create Pick Solution Function
 
-```{r,include=FALSE}
+```{r}
 pick_solution <- function(x) {
   vlet <- subset(x, nchar(x) == 5)
   solution <- sample(vlet,1)
@@ -46,14 +46,14 @@ pick_solution <- function(x) {
 
 ### Pick Solution Word
 
-```{r, include=FALSE}
+```{r}
 solution <- pick_solution(solution_list)
 
 ```
 
 ### Evaluate Guess Function
 
-```{r, include=FALSE}
+```{r}
 evaluate_guess <- function(x, y){
   guess <- x
   solution <- y
@@ -80,7 +80,7 @@ evaluate_guess <- function(x, y){
 
 ### Wordle Function
 
-```{r, include=FALSE}
+```{r}
 play_wordle <- function(solution, wordlist, num_guesses=6){
       l_left <- LETTERS
       guesses <- num_guesses
@@ -131,6 +131,6 @@ print("Letters Left:")
 
 ### Play Wordle
 
-```{r, include=FALSE}
-play_wordle(solution, valid_list,)
+```{r, eval=FALSE}
+play_wordle(pick_solution(solution_list), valid_list, )
 ```
