@@ -4,8 +4,9 @@ output: html_document
 date: "2024-02-12"
 ---
 
-## Load in Dictionaries
-```{r}
+### Load in Dictionaries
+
+```{r,include=FALSE}
 library(tidyverse)
 
 CED <- "https://raw.githubusercontent.com/difiore/ada-2024-datasets/main/collins-scrabble-words-2019.txt"
@@ -23,15 +24,17 @@ valid_list <- load_dictionary(CED)
 solution_list <- load_dictionary(GW)
 ```
 
-## Update Solution List
-```{r}
+### Update Solution List
+
+```{r,include=FALSE}
 solution_list <- intersect(solution_list,valid_list)
 # After intersection goes from 9884 words to 8336
 
 ```
 
-## Create Pick Solution Function
-```{r}
+### Create Pick Solution Function
+
+```{r,include=FALSE}
 pick_solution <- function(x) {
   vlet <- subset(x, nchar(x) == 5)
   solution <- sample(vlet,1)
@@ -41,19 +44,19 @@ pick_solution <- function(x) {
 
 ```
 
-## Pick Solution Word
-```{r}
+### Pick Solution Word
+
+```{r, include=FALSE}
 solution <- pick_solution(solution_list)
 
 ```
 
-## Evaluate Guess Function
-```{r}
+### Evaluate Guess Function
+
+```{r, include=FALSE}
 evaluate_guess <- function(x, y){
-  guess <- toupper(x)
-  guess <- str_split(guess, "")[[1]]
+  guess <- x
   solution <- y
-  #vlist <- subset(z, nchar(x) == 5)
   out <- rep("-", length(y))
   
  for (i in 1:length(y)) {
@@ -75,11 +78,13 @@ evaluate_guess <- function(x, y){
 }
 ```
 
-## Wordle Function
-```{r}
-play_wordle <- function(solution, valid_list, num_guesses=6){
+### Wordle Function
+
+```{r, include=FALSE}
+play_wordle <- function(solution, wordlist, num_guesses=6){
       l_left <- LETTERS
       guesses <- num_guesses
+      vlist <- subset(wordlist, nchar(wordlist) == 5)
 print(paste0("You have ", num_guesses," guesses left to guess a 5 letter word"))
 
 while (guesses > 0) {
@@ -95,10 +100,17 @@ print("Letters Left:")
       guess <- readline(paste0("Guess must have ", length(solution), " characters: "))
   }
   
-  evaluation <- evaluate_guess(guess,solution)
+  while (match(paste0(toupper(guess)),vlist, nomatch = 0) == 0) {
+      guess <- readline(paste0("Please guess a valid word: "))
+  }
+  
   guess <- toupper(guess)
   guess <- str_split(guess, "")[[1]]
-   l_left <- setdiff(l_left,guess)
+  
+  evaluation <- evaluate_guess(guess,solution)
+  
+  
+  l_left <- setdiff(l_left,guess)
    
    
   print(paste0(guess))
@@ -117,7 +129,8 @@ print("Letters Left:")
 
 ```
 
-## Play Wordle
-```{r}
-play_wordle(solution, solution_list,)
+### Play Wordle
+
+```{r, include=FALSE}
+play_wordle(solution, valid_list,)
 ```
